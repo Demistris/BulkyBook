@@ -2,6 +2,7 @@
 using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
@@ -23,50 +24,40 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         }
 
         //GET
-        public IActionResult Create()
+        public IActionResult Upsert(int? id)
         {
-            return View();
-        }
+            Product product = new();
 
-        //POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Product obj)
-        {
-            if (!ModelState.IsValid)
+            IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem 
+            { 
+                Text= u.Name,
+                Value = u.Id.ToString()
+            });
+
+            IEnumerable<SelectListItem> coverTypeList = _unitOfWork.CoverType.GetAll().Select(u => new SelectListItem
             {
-                return View(obj);
-            }
+                Text = u.Name,
+                Value = u.Id.ToString()
+            });
 
-            _unitOfWork.Product.Add(obj);
-            _unitOfWork.Save();
-            TempData["success"] = "Product created successfully.";
-
-            return RedirectToAction("Index");
-        }
-
-        //GET
-        public IActionResult Edit(int? id)
-        {
             if (id == null || id == 0)
             {
-                return NotFound();
+                //Create product
+                ViewBag.categoryList = categoryList;
+                return View(product);
             }
-
-            var productFromDb = _unitOfWork.Product.GetFirstOrDefault(c => c.Id == id);
-
-            if (productFromDb == null)
+            else
             {
-                return NotFound();
+                //Update product
             }
 
-            return View(productFromDb);
+            return View(product);
         }
 
         //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Product obj)
+        public IActionResult Upsert(Product obj)
         {
             if (!ModelState.IsValid)
             {
