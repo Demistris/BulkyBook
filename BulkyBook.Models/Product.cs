@@ -28,8 +28,8 @@ namespace BulkyBook.Models
 
         [Required]
         [Range(1, 10000)]
-        [Display(Name = "Last Price")]
-        public double LastPrice { get; set; }
+        [Display(Name = "List Price")]
+        public double ListPrice { get; set; }
 
         [Required]
         [Range(1, 10000)]
