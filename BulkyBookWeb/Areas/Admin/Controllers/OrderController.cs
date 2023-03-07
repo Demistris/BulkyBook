@@ -1,5 +1,6 @@
 ﻿using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
+using BulkyBook.Models.ViewModels;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,9 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 	[Authorize]
 	public class OrderController : Controller
 	{
+		[BindProperty]
+		public OrderViewModel OrderVM { get; set; }
+
 		private readonly IUnitOfWork _unitOfWork;
 
 		public OrderController(IUnitOfWork unitOfWork)
@@ -22,6 +26,46 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 		public IActionResult Index()
 		{
 			return View();
+		}
+
+        public IActionResult Details(int orderId)
+        {
+			OrderVM = new OrderViewModel()
+			{
+				OrderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == orderId, includeProperties:"ApplicationUser"),
+				OrderDetail = _unitOfWork.OrderDetail.GetAll(u => u.OrderId == orderId, includeProperties:"Product"),
+			};
+
+            return View(OrderVM);
+        }
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public IActionResult UpdateOrderDetails()
+		{
+			var orderHeaderFromDb = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == OrderVM.OrderHeader.Id, tracked:false);
+			orderHeaderFromDb.Name = OrderVM.OrderHeader.Name;
+			orderHeaderFromDb.PhoneNumber = OrderVM.OrderHeader.PhoneNumber;
+			orderHeaderFromDb.StreetAddress = OrderVM.OrderHeader.StreetAddress;
+			orderHeaderFromDb.City = OrderVM.OrderHeader.City;
+			orderHeaderFromDb.Country = OrderVM.OrderHeader.Country;
+			orderHeaderFromDb.PostalCode = OrderVM.OrderHeader.PostalCode;
+
+			if(OrderVM.OrderHeader.Carrier != null)
+			{
+				orderHeaderFromDb.Carrier = OrderVM.OrderHeader.Carrier;
+			}
+
+			if (OrderVM.OrderHeader.TrackingNumber != null)
+			{
+				orderHeaderFromDb.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
+			}
+
+			_unitOfWork.OrderHeader.Update(orderHeaderFromDb);
+			_unitOfWork.Save();
+
+			TempData["success"] = "Order Details Updated Successfully.";
+			return RedirectToAction("Details", "Order", new { orderId = orderHeaderFromDb.Id});
 		}
 
 		#region API CALLS
