@@ -96,7 +96,7 @@ namespace BulkyBookWeb.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("LastPrice")
+                    b.Property<double>("ListPrice")
                         .HasColumnType("float");
 
                     b.Property<double>("Price")
