@@ -30,14 +30,14 @@ namespace BulkyBook.DataAccess.DbInitializer
             //Migrations if they are not applied
             try
             {
-                if(_db.Database.GetPendingMigrations().Count() > 0)
+                if(_db.Database.GetPendingMigrations().Any())
                 {
                     _db.Database.Migrate();
                 }
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine(ex.Message);
             }
 
             //Create roles if they are not created
@@ -58,12 +58,16 @@ namespace BulkyBook.DataAccess.DbInitializer
                     StreetAddress = "Test Street",
                     PostalCode = "12-123",
                     City = "Cracow",
-                    Country = "Poland"
+                    Country = "Poland",
+                    EmailConfirmed = true,
                 }, "Admin123!").GetAwaiter().GetResult();
 
                 ApplicationUser user = _db.ApplicationUsers.FirstOrDefault(u => u.Email == "admin@dotnetmastery.com");
 
-                _userManager.AddToRoleAsync(user, SD.ROLE_ADMIN).GetAwaiter().GetResult();
+                if (user != null)
+                {
+                    _userManager.AddToRoleAsync(user, SD.ROLE_ADMIN).GetAwaiter().GetResult();
+                }
             }
 
             return;
