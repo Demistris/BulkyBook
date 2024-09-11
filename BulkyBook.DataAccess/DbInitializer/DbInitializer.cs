@@ -48,19 +48,19 @@ namespace BulkyBook.DataAccess.DbInitializer
                 _roleManager.CreateAsync(new IdentityRole(SD.ROLE_USER_INDIVIDUAL)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(SD.ROLE_USER_COMPANY)).GetAwaiter().GetResult();
 
-                //Create Admin
-                _userManager.CreateAsync(new ApplicationUser
-                {
-                    UserName = "Admin",
-                    Email = "admin@gmail.com",
-                    Name = "Kaja Więckowska",
-                    PhoneNumber = "111222333",
-                    StreetAddress = "Test Street",
-                    PostalCode = "12-123",
-                    City = "Cracow",
-                    Country = "Poland",
-                    EmailConfirmed = true,
-                }, "Admin123!").GetAwaiter().GetResult();
+                ////Create Admin
+                //_userManager.CreateAsync(new ApplicationUser
+                //{
+                //    UserName = "Admin",
+                //    Email = "admin@gmail.com",
+                //    Name = "Kaja Więckowska",
+                //    PhoneNumber = "111222333",
+                //    StreetAddress = "Test Street",
+                //    PostalCode = "12-123",
+                //    City = "Cracow",
+                //    Country = "Poland",
+                //    EmailConfirmed = true,
+                //}, "Admin123!").GetAwaiter().GetResult();
 
                 ApplicationUser user = _db.ApplicationUsers.FirstOrDefault(u => u.Email == "admin@dotnetmastery.com");
 
